@@ -1,0 +1,15 @@
+name = "MutRank"
+uuid = "bb44428a-3a7f-4569-bbb2-82086a261f4c"
+authors = ["Felipe Benitez <fbenitez1@gsu.edu>"]
+version = "0.1.0"
+
+[deps]
+BandStruct = "839fd882-bd41-41b1-9826-d7cfd97ab335"
+Householder = "c865288b-f3c9-4f4c-a1b9-0a546e45b448"
+InPlace = "be40da39-38af-4299-9425-252ac2c40a94"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+OrthWeight = "3bc35e4e-7628-40fc-98a9-bb0011358482"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Rotations = "736fae1d-e7b5-4d1b-9fe5-a4d954b343ea"
+SafeTestsets = "1bc83da4-3b8d-516f-aca4-4fe02f6d838f"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
