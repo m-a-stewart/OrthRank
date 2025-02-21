@@ -1,20 +1,23 @@
-using Random
-using OrthWeight
-using BandStruct
+using LinearAlgebra 
+using Random 
+using InPlace 
+using Rotations 
 using Householder
-using InPlace
-using Rotations
-using LinearAlgebra
+using BandStruct
+using OrthWeight
 using GivensWeightQR
-
-function run_QR(
+using Plots
+using BenchmarkTools
+using StatsPlots
+ 
+function create_gw(
   rng::AbstractRNG,
   m::Int64,
   n::Int64,
   block_gap::Int64,
   upper_rank_max::Int64,
   lower_rank_max::Int64,
-)
+ )
   upper_blocks, lower_blocks =
     random_blocks_generator_no_overlap(rng, m, n, block_gap)
   num_blocks = length(upper_blocks)
@@ -29,11 +32,9 @@ function run_QR(
       (lower_rank_max) * (upper_rank_max + lower_rank_max - 1) +
       (block_gap - 1) * div(lower_rank_max * (lower_rank_max + 1), 2)
     )
-  # Rotations needed by structure + rot needed to avoid fill-in
-  # (lrm^2 from previous block extended).
   max_num_lower_rots = (block_gap + lower_rank_max - 1) * lower_rank_max
   upper_rank_max = 2 * block_gap + upper_rank_max + lower_rank_max
-  gw1 = GivensWeight(
+  gw = GivensWeight(
     Float64,
     TrailingDecomp(),
     rng,
@@ -50,10 +51,32 @@ function run_QR(
     max_num_upper_rots = max_num_upper_rots,
     max_num_lower_rots = max_num_lower_rots,
   )
-  A = Matrix(gw1)
-  Q = Matrix(1.0I, m, m)
-  F = qr(gw1)
-  create_Q!(Q, F)
-  R = create_R(F)
-  return A, Q, R
+  return gw
 end
+
+rng = MersenneTwister(1234)
+num_exp = 50
+dims = [1000, 2000, 3000]
+block_gap = 10
+upper_rank_max = 5
+lower_rank_max = 5
+residuals = zeros(num_exp)
+plot()
+for m in dims
+  n = m
+  for i in 1:num_exp
+    b = rand(n,1)
+    c = copy(b)
+    gw = create_gw(rng, m, n, block_gap, upper_rank_max, lower_rank_max)
+    gwc = deepcopy(gw)
+    x = gw\b
+    # F = qr(gwc)
+    # Q = Matrix(1.0I, m, m)
+    # create_Q!(Q, F)
+    # R = create_R(F)
+    residuals[i] = norm(gwc*x - c,2)/(norm_2_gw(gwc,100)*norm(x,2)) #when vector, norm(_,2) is norm 2 of vectors
+  end
+  boxplot!(rand([string(m)],num_exp),log10.(residuals))
+end
+plot!(legend=false, ylabel="relative residual 2-norm = 10ᵏ", xlabel="matrix size")
+savefig("GivensWeightQR/images/residual_backslash.svg")

@@ -50,7 +50,7 @@ end
   tol = 1e-12
   rng = MersenneTwister(1234)
 
-  A, x_a, c = run_backslash_operator_vector(
+  gw, x, b = run_backslash_operator_vector(
     rng,
     m,
     n,
@@ -58,11 +58,11 @@ end
     upper_rank_max,
     lower_rank_max,
   )
-  @testset "backslash vector, ||A'(Ax - b)||" begin
-    @test norm(A' * (A * x_a - c), Inf) / (norm(A, Inf) * norm(x_a, Inf)) <= tol
+  @testset "Backslash vector, square, ||gw*x - b)||/(||gw||*||x)" begin
+    @test norm(gw * x - b) / (norm(gw.b) * norm(x)) <= tol
   end
 
-  A, x_a, c = run_backslash_operator_matrix(
+  gw, x, b = run_backslash_operator_matrix(
     rng,
     m,
     n,
@@ -70,13 +70,13 @@ end
     upper_rank_max,
     lower_rank_max,
   )
-  @testset "backslash matrix, ||A'(Ax - b)||" begin
-    @test norm(A' * (A * x_a - c), Inf) / (norm(A, Inf) * norm(x_a, Inf)) <= tol
+  @testset "backslash matrix, square, ||A'(Ax - b)||" begin
+    @test norm(gw * x - b) / (norm(gw.b) * norm(x)) <= tol
   end
 
   m=100
   n = 150
-  A, x_a, c = run_backslash_operator_vector(
+  gw, x, b = run_backslash_operator_vector(
     rng,
     m,
     n,
@@ -84,13 +84,13 @@ end
     upper_rank_max,
     lower_rank_max,
   )
-  @testset "backslash vector, underdetermined, ||A'(Ax - b)||" begin
-    @test norm(A' * (A * x_a - c), Inf) / (norm(A, Inf) * norm(x_a, Inf)) <= tol
+  @testset "Backslash vector, underdetermined, ||A'(Ax - b)||" begin
+    @test norm(gw * x - b) / (norm(gw.b) * norm(x)) <= tol
   end
 
   m=150
   n = 100
-  A, x_a, c = run_backslash_operator_vector(
+  gw, x, b = run_backslash_operator_vector(
     rng,
     m,
     n,
@@ -98,8 +98,9 @@ end
     upper_rank_max,
     lower_rank_max,
   )
+  A = Matrix(gw)
   @testset "backslash vector, overdetermined, ||A'(Ax - b)||" begin
-    @test norm(A' * (A * x_a - c), Inf) / (norm(A, Inf) * norm(x_a, Inf)) <= tol
+    @test norm(A' * (gw * x - b)) / (norm(gw.b) * norm(x)) <= tol
   end
 
 end

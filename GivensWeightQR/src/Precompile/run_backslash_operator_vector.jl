@@ -49,9 +49,9 @@ function run_backslash_operator_vector(
     max_num_upper_rots = max_num_upper_rots,
     max_num_lower_rots = max_num_lower_rots,
   )
-  A = Matrix(gw1)
   b = randn(m)
   c = copy(b)
-  x_a = gw1 \ b
-  return A, x_a, c
+  gw = deepcopy(gw1)
+  x = gw1 \ b
+  return gw, x, c
 end

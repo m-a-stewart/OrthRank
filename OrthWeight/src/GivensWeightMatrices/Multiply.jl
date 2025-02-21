@@ -1,3 +1,4 @@
+#Right Multiplication
 # C ← α A B + β C
 function LinearAlgebra.mul!(
   C::AbstractMatrix{E},
@@ -206,4 +207,3 @@ function Base.:*(A::GivensWeight,
   mul!(C, A, B)
   return C
 end
-

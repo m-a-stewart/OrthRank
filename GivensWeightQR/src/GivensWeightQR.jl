@@ -16,7 +16,9 @@ export random_blocks_generator,
   create_R,
   solve!,
   QRGivensWeight,
-  QGivensWeight
+  QGivensWeight,
+  norm_2_gw,
+  leftmul
 
 """
   	struct QGivensWeight{M<:AbstractMatrix}
@@ -168,8 +170,7 @@ function random_blocks_generator_no_overlap(
   n::Int64,
   gap::Int64,
 )
-  min(m, n) < gap && throw("Gap between blocks is bigger
-    than the smallest size of the matrix.")
+  min(m, n) < gap && throw("Gap block bigger than smallest matrix size.")
   mn = min(m, n)
   δ = (gap + 1) / 2
   upper_rows = zeros(Int64, 1, mn) #upper_block doest not work with vectors
@@ -420,6 +421,65 @@ function create_R(F::QRGivensWeight)
   A = Matrix(F.R)
   return A
 end
+
+# function power_iteration(
+#   A::AbstractMatrix,
+#   num_it::Int64
+#   )
+#   #Power iteration Section 
+#   m, n = size(A)
+#   b = randn(m,1)
+#   for i in 1:num_it
+#     b = A * A' * b
+#     b = b/norm(b)
+#   end
+#   da_norm = sqrt((b'*(A*A'*b))/(b'*b))
+#   return da_norm
+# end
+
+function norm_2_gw(
+  gw::GivensWeight,
+  num_it::Int64
+  )
+  m, n = size(gw.b)
+  if m >= n  #⇒b'*A*A'*b
+    b = randn(m,1)
+    for i in 1:num_it 
+      b = gw * leftmul(b', gw)'
+      b = b/norm(b)
+    end
+    aux = leftmul(b', gw)
+    max_s_value = sqrt(b' * (gw * aux'))
+  elseif n > m # ⇒ b'*A'*A*b
+    b = randn(n,1)
+    for i in 1:num_it
+      b = leftmul((gw * b)', gw)'
+      b = b/norm(b)
+    end
+    aux = gw * b
+    max_s_value = sqrt(b' * leftmul(aux', gw)') 
+  end
+  return max_s_value[1,1]
+end
+
+function leftmul(
+    B::AbstractMatrix,
+    gw::GivensWeight,
+  )
+  ma, na = size(gw.b)
+  mb, nb = size(B)
+  work = similar(B, mb, na)
+  nb != ma &&
+  throw(DimensionMismatch(lazy" B has dimensions ($mb,$nb) but A has dimensions ($ma,$na)"))
+  for k in 1:na
+    row_s = first_inband_index(gw.b,:,k)
+    row_e = last_inband_index(gw.b,:,k)
+    for l in 1:mb
+      work[l,k] = dot(B[l,row_s:row_e], gw.b[row_s:row_e,k])
+    end
+  end
+  return work
+end  
 
 using PrecompileTools
 @setup_workload begin

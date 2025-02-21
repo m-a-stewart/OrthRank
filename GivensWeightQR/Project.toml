@@ -5,18 +5,23 @@ version = "0.1.0"
 
 [deps]
 BandStruct = "839fd882-bd41-41b1-9826-d7cfd97ab335"
+BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
 Householder = "c865288b-f3c9-4f4c-a1b9-0a546e45b448"
 InPlace = "be40da39-38af-4299-9425-252ac2c40a94"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 OrthWeight = "3bc35e4e-7628-40fc-98a9-bb0011358482"
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+Polynomials = "f27b6e38-b328-58d1-80ce-0feddd5e7a45"
 PrecompileTools = "aea7be01-6a6a-4083-8856-8a6e6704d82a"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Rotations = "736fae1d-e7b5-4d1b-9fe5-a4d954b343ea"
+SafeTestsets = "1bc83da4-3b8d-516f-aca4-4fe02f6d838f"
+StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
 
 [extras]
 JET = "c3a54625-cd67-489e-a8e7-0a5a0ff4e31b"
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 SafeTestsets = "1bc83da4-3b8d-516f-aca4-4fe02f6d838f"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
 test = ["JET", "Test", "SafeTestsets"]
